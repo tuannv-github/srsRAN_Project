@@ -1,0 +1,66 @@
+========================================
+ORAN FHI 7.2 Interface Setup Log
+Started: Sel 04 Nov 2025 04:49:55  WIB
+Command: ./vf.sh 
+========================================
+
+[2025-11-04 16:49:55] Log file initialized: interface_setup.log
+[2025-11-04 16:49:55] Starting ORAN FHI 7.2 Interface Setup for ens43f0
+[2025-11-04 16:49:55] ==================================================
+[2025-11-04 16:49:55] SUCCESS: Interface ens43f0 found
+[2025-11-04 16:49:55] Current interface information for ens43f0:
+[2025-11-04 16:49:55] Setting maximum ring buffers for ens43f0 to 4096
+[2025-11-04 16:49:55] Current RX ring buffer: 4096, TX ring buffer: 4096
+[2025-11-04 16:49:55] EXEC: ethtool -G "ens43f0" rx "4096" tx "4096" 2>/dev/null
+[2025-11-04 16:49:55] SUCCESS: Ring buffers set to 4096
+[2025-11-04 16:49:55] Setting MTU for ens43f0 to 9600
+[2025-11-04 16:49:55] Current MTU: 9600
+[2025-11-04 16:49:55] EXEC: ip link set "ens43f0" mtu "9600"
+[2025-11-04 16:49:55] SUCCESS: MTU set to 9600
+[2025-11-04 16:49:55] Creating Virtual Functions (VFs) for ens43f0
+[2025-11-04 16:49:55] Loading iavf driver
+[2025-11-04 16:49:55] EXEC: modprobe iavf
+[2025-11-04 16:49:55] Removing existing VFs
+[2025-11-04 16:49:55] EXEC: echo 0 > "/sys/class/net/ens43f0/device/sriov_numvfs" 2>/dev/null || true
+[2025-11-04 16:49:57] Creating 1 VF(s)
+[2025-11-04 16:49:57] EXEC: echo "1" > "/sys/class/net/ens43f0/device/sriov_numvfs"
+[2025-11-04 16:49:58] SUCCESS: Created 1 VF(s)
+[2025-11-04 16:50:00] Configuring VF 0 (CU-plane) with MAC aa:bb:cc:dd:ee:00, VLAN 3
+[2025-11-04 16:50:00] EXEC: ip link set "ens43f0" vf 0 mac "aa:bb:cc:dd:ee:00"
+[2025-11-04 16:50:00] SUCCESS: VF 0 MAC address set to aa:bb:cc:dd:ee:00
+[2025-11-04 16:50:00] EXEC: ip link set "ens43f0" vf 0 vlan "3"
+[2025-11-04 16:50:00] SUCCESS: VF 0 VLAN set to 3
+[2025-11-04 16:50:00] EXEC: ip link set "ens43f0" vf 0 spoofchk off
+[2025-11-04 16:50:00] SUCCESS: VF 0 spoof checking disabled
+[2025-11-04 16:50:00] Getting VF PCI addresses
+[2025-11-04 16:50:00] Physical interface PCI address: 0000:99:00.0
+[2025-11-04 16:50:00] SUCCESS: VF PCI addresses found:
+[2025-11-04 16:50:00]   - CU-plane VF: 0000:99:02.0
+[2025-11-04 16:50:00] Binding VFs to DPDK driver vfio-pci
+[2025-11-04 16:50:00] Loading driver vfio-pci
+[2025-11-04 16:50:00] EXEC: modprobe "vfio-pci"
+[2025-11-04 16:50:00] Unbinding VF from current driver
+[2025-11-04 16:50:00] EXEC: /usr/local/bin/dpdk-devbind.py --unbind "0000:99:02.0" 2>/dev/null || true
+[2025-11-04 16:50:01] Binding CU-plane VF 0000:99:02.0 to vfio-pci
+[2025-11-04 16:50:01] EXEC: /usr/local/bin/dpdk-devbind.py --bind "vfio-pci" "0000:99:02.0"
+[2025-11-04 16:50:01] SUCCESS: CU-plane VF bound to vfio-pci
+[2025-11-04 16:50:01] Verifying DPDK binding
+[2025-11-04 16:50:01] EXEC: /usr/local/bin/dpdk-devbind.py --status | grep -E "(0000:99:02.0)"
+[2025-11-04 16:50:02] SUCCESS: DPDK binding verification complete
+[2025-11-04 16:50:02] SUCCESS: Restore script created: /tmp/restore_interface_ens43f0.sh
+[2025-11-04 16:50:02] Configuration Summary:
+[2025-11-04 16:50:02]   - Interface: ens43f0
+[2025-11-04 16:50:02]   - MTU: 9600
+[2025-11-04 16:50:02]   - Ring Buffer Size: 4096
+[2025-11-04 16:50:02]   - VLAN: 3
+[2025-11-04 16:50:02]   - Number of VFs: 1
+[2025-11-04 16:50:02]   - CU-plane MAC: aa:bb:cc:dd:ee:00
+[2025-11-04 16:50:02]   - CU-plane PCI: 0000:99:02.0
+[2025-11-04 16:50:02]   - DPDK Driver: vfio-pci
+[2025-11-04 16:50:02] 
+[2025-11-04 16:50:02] Use these parameters in your OAI configuration file:
+[2025-11-04 16:50:02]   dpdk_devices = ("0000:99:02.0");
+[2025-11-04 16:50:02]   ru_addr = ("aa:bb:cc:dd:ee:00");
+[2025-11-04 16:50:02] SUCCESS: Interface setup completed successfully!
+[2025-11-04 16:50:02] You can now use the configuration in your OAI gNB setup.
+[2025-11-04 16:50:02] To restore the interface to default settings, run: 
