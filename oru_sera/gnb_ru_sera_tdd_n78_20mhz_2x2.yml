@@ -1,0 +1,90 @@
+# This example configuration outlines how to configure the srsRAN Project CU/DU to use an O-RU and split 7.2. This is specifically for use
+# with the Benetel RAN550 RU. This config will create a single TDD MIMO cell transmitting in band 78, with 100 MHz bandwidth and 30 kHz sub-carrier-spacing.
+# The parameters used to configure the RU are found in the `ru_ofh` sub-section. This configuration makes used of the OFH Lib from SRS to enable split 7.2.
+
+cu_cp:
+  amf:
+    addr: 192.168.70.132
+    port: 38412
+    bind_addr: 192.168.70.129
+    supported_tracking_areas:
+      - tac: 1
+        plmn_list:
+          - plmn: "00101"
+            tai_slice_support_list:
+              - sst: 1
+
+ru_ofh:
+  t1a_max_cp_dl: 429
+  t1a_min_cp_dl: 285
+  t1a_max_cp_ul: 429
+  t1a_min_cp_ul: 285
+  t1a_max_up: 196
+  t1a_min_up: 96
+  ta4_max: 180
+  ta4_min: 110
+  is_prach_cp_enabled: true
+  compr_method_ul: bfp
+  compr_bitwidth_ul: 9
+  compr_method_dl: bfp
+  compr_bitwidth_dl: 9
+  compr_method_prach: bfp
+  compr_bitwidth_prach: 9
+  enable_ul_static_compr_hdr: true
+  enable_dl_static_compr_hdr: true
+  iq_scaling: 20
+  # Phase compensation is automatically handled by the lower PHY layer per TS38.211 Section 5.4
+  # based on subcarrier spacing, cyclic prefix, DFT size, and center frequency.
+  # Ensure the O-RU configuration matches the phase compensation behavior.
+  cells:
+    # When using DPDK, use PCI address instead of interface name
+    # For VF bound to vfio-pci, use PCI address (0000:bd:02.0) or DPDK port ID (0)
+    - network_interface: 0000:bd:02.0
+    # When NOT using DPDK, use base interface (VLAN tagging handled by vlan_tag_cp/vlan_tag_up)
+    # - network_interface: ens12f0
+      # ru_mac_addr: fm1-mac9 mac address
+      ru_mac_addr: 00:10:61:00:42:fd
+      du_mac_addr: 7a:a1:ab:00:f3:10
+      vlan_tag_cp: 564
+      vlan_tag_up: 564
+      prach_port_id: [4, 5]
+      dl_port_id: [0, 1]
+      ul_port_id: [0, 1]
+
+cell_cfg:
+  dl_arfcn: 628334
+  band: 78
+  channel_bandwidth_MHz: 20
+  common_scs: 30
+  plmn: "00101"
+  tac: 1
+  pci: 123
+  nof_antennas_dl: 2
+  nof_antennas_ul: 2
+  prach:
+    prach_config_index: 159
+    prach_root_sequence_index: 1
+    zero_correlation_zone: 0
+  ssb:
+    ssb_block_power_dbm: -4
+  tdd_ul_dl_cfg:
+    dl_ul_tx_period: 10
+    nof_dl_slots: 7
+    nof_dl_symbols: 6
+    nof_ul_slots: 2
+    nof_ul_symbols: 4
+
+log:
+  filename: ./gnb.log
+  # all_level: info
+  # mac_level: debug
+
+hal:
+   eal_args: "--lcores (0-1)@(0-11) -a 0000:bd:02.0"
+
+pcap:
+  mac_enable: false
+  mac_type: dlt
+  mac_filename: ./gnb_mac.pcapng
+  ngap_enable: false
+  ngap_filename: ./gnb_ngap.pcapng
